@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:film/screens/home_screen.dart';
 import 'package:film/screens/search_screen.dart';
 import 'package:film/screens/favorite_screen.dart';
-
 void main() => runApp(const MyApp());
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Film',
+      title: 'Pilem',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
@@ -21,29 +18,23 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
   @override
   MainScreenState createState() => MainScreenState();
 }
-
 class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-
   final List<Widget> _screens = [
     const HomeScreen(),
     const SearchScreen(),
     const FavoriteScreen(),
   ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,4 +59,4 @@ class MainScreenState extends State<MainScreen> {
       ),
     );
   }
-} 
+}

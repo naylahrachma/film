@@ -1,32 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:film/models/movie.dart';
 import 'package:film/screens/detail_screen.dart';
-import 'package:film/services/api_service.dart';
-
+import 'package:film/services/api_services.dart';
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
-
   @override
   SearchScreenState createState() => SearchScreenState();
 }
-
 class SearchScreenState extends State<SearchScreen> {
   final ApiService _apiService = ApiService();
   final TextEditingController _searchController = TextEditingController();
   List<Movie> _searchResults = [];
-
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_searchMovies);
   }
-
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-
   void _searchMovies() async {
     if (_searchController.text.isEmpty) {
       setState(() {
@@ -34,15 +28,12 @@ class SearchScreenState extends State<SearchScreen> {
       });
       return;
     }
-
     final List<Map<String, dynamic>> searchData =
     await _apiService.searchMovies(_searchController.text);
-
     setState(() {
       _searchResults = searchData.map((e) => Movie.fromJson(e)).toList();
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

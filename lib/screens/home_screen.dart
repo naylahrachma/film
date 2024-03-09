@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:film/models/movie.dart';
 import 'package:film/screens/detail_screen.dart';
-import 'package:film/services/api_service.dart';
-import 'package:flutter/cupertino.dart';
-
-import '../models/movie.dart';
-
+import 'package:film/services/api_services.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,64 +18,62 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Movie> _popularMovies = [];
 
   @override
-  void intState () {
+  void initState() {
     super.initState();
+    _loadMovie();
   }
 
-  Future<void> _loadMovies() async {
-    final List<Map<String, dynamic>> _allMoviesData = await _apiService.getAllMovies();
-    final List<Map<String, dynamic>> _trendingMoviesData = await _apiService.getTrendingMovies();
-    final List<Map<String, dynamic>> _popularMoviesData = await _apiService.getPopularMovies();
+  Future<void> _loadMovie() async {
+    final List<Map<String, dynamic>> allMovieData = await _apiService.getAllMovies();
+    final List<Map<String, dynamic>> trendingMovieData = await _apiService.getTrendingMovies();
+    final List<Map<String, dynamic>> popularMoviesData = await _apiService.getPopularMovies();
 
     setState(() {
-      _allMovies = _allMoviesData.map((e) => Movie.fromJson(e)).toList();
-      _trendingMovies = _trendingMoviesData.map((e) => Movie.fromJson(e)).toList();
-      _popularMovies = _popularMoviesData.map((e) => Movie.fromJson(e)).toList();
-
-      print('_allMovies: $_allMovies');
-      print('_trendingMovies: $_trendingMovies');
-      print('_popularMovies: $_popularMovies');
+      _allMovies = allMovieData.map((e) => Movie.fromJson(e)).toList();
+      _trendingMovies = trendingMovieData.map((e) => Movie.fromJson(e)).toList();
+      _popularMovies = popularMoviesData.map((e) => Movie.fromJson(e)).toList();
     });
   }
 
-  Widget _buildMovieList(String title, List<Movie> movies) {
+  Widget _buildMoviesList(String title, List<Movie> movies) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          title,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         SizedBox(
           height: 200,
           child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: movies.length,
-              itemBuilder: (BuildContext context, int index) {
-                final Movie movie = movies[index];
-                GestureDetector(
-                    onTap: () =>
-                        Navigator.push(
-                          context, MaterialPageRoute(
-                          builder: (context) => DetailScreen(movie: movie),),),
-                    child: Column(
-                      children: [
-                        Image.network(
-                          'https://image.tmdb.org/t/p/w/500${movie.posterPath}',
-                          height: 150,
-                          width: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        SizedBox(height: 5),
-                        Text(movie.title.length > 14 ?
-                        '${movie.title.substring(0, 10)}...' : movie.title,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    )
-                );
-              }
+            scrollDirection: Axis.horizontal,
+            itemCount: movies.length,
+            itemBuilder: (BuildContext context, int index) {
+              final Movie movie = movies[index];
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DetailScreen(movie: movie)),
+                ),
+                child: Column(
+                  children: [
+                    Image.network(
+                      'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                      height: 150,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      movie.title.length > 14 ? '${movie.title.substring(0, 10)}...' : movie.title,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-        )
+        ),
       ],
     );
   }
@@ -87,16 +82,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Film'),
+        title: Text('Movies'),
       ),
-      body: SingleChildScrollView(
-        child:Column(
-          children: [
-            _buildMovieList('All Movies', _allMovies),
-            _buildMovieList('Trending Movies', _trendingMovies),
-            _buildMovieList('Popular Movies', _popularMovies),
-          ],
-        ),
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: [
+          _buildMoviesList('All Movies', _allMovies),
+          _buildMoviesList('Trending Movies', _trendingMovies),
+          _buildMoviesList('Popular Movies', _popularMovies),
+        ],
       ),
     );
   }
